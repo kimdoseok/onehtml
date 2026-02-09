@@ -26,40 +26,38 @@ def getStyles(dirpath, basename):
     for i, line in enumerate(lines):
         if re.search(r"</style>", line):
             lines[i] = re.sub(r"</style>", f"{styles}</style>", line)
+            found = True
             break
+    if not found and len()(styles) > 0:
+        for i, line in enumerate(lines):
+            if re.search(r"</head>", line):
+                lines[i] = re.sub(r"</head>", f"{styles}</head>", line)
+                break
 
-def convertImage(imgname):
+def convertImage(imgname, line):
     """Converts an image to a base64 string and replaces the source in the HTML content."""
     imgpath = os.path.join(fileinfo["dirpath"], imgname)
     new_img = ""
     with open(imgpath, "rb") as img_file:
         encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
         new_src = f"data:image/{fileinfo['filepathtype']};base64,{encoded_string}"
-        for i, line in enumerate(lines):
-            if re.search(f"<img .*src=\"{imgname}\" ", line, re.IGNORECASE):
-                lines[i] = re.sub(f"<img (.*)src=\"{imgname}\" ", f"<img \\1src=\"{new_src}\" ", line, flags=re.IGNORECASE)
-                break
+        new_img = re.sub(f"<img (.*)src=\"{imgname}\" ", f"<img \\1src=\"{new_src}\" ", line, flags=re.IGNORECASE)
     return new_img
 
 def convline(line):
     """Converts a single line by replacing image source."""
     pattern = "<img .*src=\"(.+)\" "
+    newline = line
     m = re.search(pattern, line, re.IGNORECASE)
     if m:
-        imgname = m.group(1)
+        group_count = len(m.groups())
+        for i in range(group_count):
+            print(f"Group {i+1}: {m.group(i+1)}")
+            imgname = m.group(i+1)
         print(f"Extracted value: {imgname}")
-        convertImage(imgname)        
-    re.sub(pattern, replacement, string, count=0, flags=0)
-    text = "My phone number is 123-456-7890. Another is 987-654-3210."
-    pattern = r"\d{3}-\d{3}-\d{4}" # Pattern for a phone number
-    replacement = "[REDACTED]"
-
-    updated_text = re.sub(pattern, replacement, text)
-    print(updated_text)
-    # Output: My phone number is [REDACTED]. Another is [REDACTED].
-
-
-
+        replacement = convertImage(imgname, line)
+        newline = re.sub(pattern, replacement, line, count=0, flags=re.IGNORECASE)
+        print(newline)
     return newline
 
 def addStyle():
