@@ -72,7 +72,7 @@ class OneHTML:
         file_path = fd.askopenfilename(
             title="Open a file",
             initialdir="/", # Start in the root directory (adjust as needed)
-            filetypes=(("HTML Files", "*.html"), ("All Files", "*.*")) # Filter file types
+            filetypes=(("HTML Files", "*.html *.htm"), ("All Files", "*.*")) # Filter file types
         )
         if file_path:
             self.fileinfo["dirpath"] = "/".join(file_path.split("/")[:-1]) # Get the directory path from the file path
