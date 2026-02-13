@@ -1,3 +1,0 @@
-([('OneHTML',
-   '/Users/doseokkim/Developer/onehtml/dist/OneHTML',
-   'EXECUTABLE')],)
