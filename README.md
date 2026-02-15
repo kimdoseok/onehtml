@@ -1,5 +1,5 @@
 # onehtml
-This merges a saved html file with image folder to embedded single html file   
+This merges a saved html file with image and style folder to embedded single html file   
 
 ## Purpose
 When I want to keep informations from web, I usally save the page in my computer.  Few days ago, I found I lost image files of the saved html.  There are formats to do this.  Microsoft mht format is the best for this.  Unfortunately my firefox doesn't have ability to handle mht format.  It saves html and linked files to the file.  I decided to make a small python app for merging all files into one.  
