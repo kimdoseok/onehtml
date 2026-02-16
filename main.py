@@ -37,7 +37,7 @@ class OneHTML:
                 lines[i] = re.sub(r"</style>", f"{styles}</style>", line)
                 found = True
                 break
-        if not found and len()(styles) > 0:
+        if not found and len(styles) > 0:
             for i, line in enumerate(lines):
                 if re.search(r"</head>", line):
                     lines[i] = re.sub(r"</head>", f"{styles}</head>", line)
