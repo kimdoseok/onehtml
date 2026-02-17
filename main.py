@@ -28,19 +28,22 @@ class OneHTML:
             if os.path.isdir(full_path) and entry[:len(self.fileinfo["filepathbase"])] == self.fileinfo["filepathbase"]:
                 subfiles = os.listdir(os.path.join(self.fileinfo["dirpath"], entry))
                 for i, sub in enumerate(subfiles):
-                    if re.search(r".*\.css", sub):
+                    if re.search(r".*\.css", sub, flags=re.IGNORECASE):
                         with open(os.path.join(self.fileinfo["dirpath"], entry, sub), 'r') as file:
                             styles += "\n/* "+entry+" */\n"+file.read()+"\n"
         
         for i, line in enumerate(lines):
-            if re.search(r"</style>", line):
-                lines[i] = re.sub(r"</style>", f"{styles}</style>", line)
+            if re.search(r"</style>", line, flags=re.IGNORECASE):
+                lines[i] = re.sub(r"</style>", f"{styles}</style>", line, count=1, flags=re.IGNORECASE)
                 found = True
                 break
-        if not found and len()(styles) > 0:
+        if not found and len(styles) > 0:
             for i, line in enumerate(lines):
-                if re.search(r"</head>", line):
-                    lines[i] = re.sub(r"</head>", f"{styles}</head>", line)
+                m = re.search(r"</head>", line, flags=re.IGNORECASE)
+                if m and len(m.groups()) > 0:
+                    print(m.groups())
+                    headwithstyle = f"<head><style>{styles}</style></head>"
+                    lines[i] = re.sub(r"</head>", headwithstyle, line, count=1, flags=re.IGNORECASE)
                     break
         
     def convertImage(self, imgname, line):
@@ -51,20 +54,20 @@ class OneHTML:
             with open(imgpath, "rb") as imgf:
                 encoded_string = base64.b64encode(imgf.read()).decode('utf-8')
                 new_src = f"data:image/{self.fileinfo['filepathtype']};base64,{encoded_string}"
-                new_img = re.sub(f"<img (.*)src=\"{imgname}\" ", f"<img \\1src=\"{new_src}\" ", line, flags=re.IGNORECASE)
+                new_img = re.sub(f"<img (.*)src=\"{imgname}\" ", f"<img \\1src=\"{new_src}\" ", line, count=1, flags=re.IGNORECASE)
         return new_img
 
     def convline(self,line):
         """Converts a single line by replacing image source."""
         pattern = "<img .*src=\"(.+)\" "
         newline = line
-        m = re.search(pattern, line, re.IGNORECASE)
+        m = re.search(pattern, line, flags = re.IGNORECASE)
         if m:
             group_count = len(m.groups())
             for i in range(group_count):
                 imgname = m.group(i+1)
                 replacement = self.convertImage(imgname, line)
-                newline = re.sub(pattern, replacement, line, count=0, flags=re.IGNORECASE)
+                newline = re.sub(pattern, replacement, newline, count=1, flags=re.IGNORECASE)
         return newline
 
     def open_file_dialog(self):
